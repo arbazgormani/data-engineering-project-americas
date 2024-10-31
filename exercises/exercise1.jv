@@ -1,0 +1,73 @@
+
+// Exercise 1
+// Goal
+// Write data into a SQLite database called “airports.sqlite”, in the table “airports”
+// Do not save the following columns: Zeitzone, DST, Zeitzonen-Datenbank, geo_punkt
+// Assign fitting built-in SQLite types (e.g., BIGINT, TEXT or FLOAT) to all other columns
+// Do not rename column names
+// No further data validation is required, do not drop any rows or change any data points
+
+pipeline AirportsPipeline {
+
+
+  AirportsExtractor
+    -> AirportsTextFileInterpreter;
+
+  AirportsTextFileInterpreter
+    -> AirportsCSVInterpreter
+    // -> NameHeaderWriter
+    -> AirportsTableInterpreter
+    -> AirportsLoader;
+
+
+  block AirportsExtractor oftype HttpExtractor {
+
+    // URL for CSV file
+    url: "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
+  }
+
+  // This file has to be interpreted, e.g., as text file.
+  block AirportsTextFileInterpreter oftype TextFileInterpreter { }
+
+  block AirportsCSVInterpreter oftype CSVInterpreter {
+    delimiter: ";";
+  }
+
+  // // 11. We can write into cells of a sheet using the CellWriter block type.
+  // block NameHeaderWriter oftype CellWriter {
+  //   // 12. We utilize a syntax similar to spreadsheet programs.
+  //   // Cell ranges can be described using the keywords "cell", "row", "column", or "range" that indicate which 
+  //   // cells are selected for the write action.
+  //   at: cell A1;
+  //   // we can specify what value shall be written into the cell.
+  //   write: [
+  //     "name"
+  //   ];
+  // }
+
+
+  // We define a value type per column that specifies the data type of the column.
+  // Rows that include values that are not valid according to the their value types are dropped automatically. 
+  block AirportsTableInterpreter oftype TableInterpreter {
+    header: true;
+    columns: [
+      "Lfd. Nummer" oftype integer,
+      "Name des Flughafens" oftype text,
+      "Ort" oftype text,
+      "Land" oftype text,
+      "IATA" oftype integer,
+      "ICAO" oftype text,
+      "Latitude" oftype decimal,
+      "Longitude" oftype decimal
+    ];
+  }
+
+  // here into a sqlite file.
+  // The structural information of the table is used
+  // to generate the correct table.
+  block AirportsLoader oftype SQLiteLoader {
+    table: "Airports";
+    file: "./Airports.sqlite";
+  }
+
+}
