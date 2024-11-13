@@ -1,0 +1,5 @@
+DATA_SOURCE1 = 'https://raw.githubusercontent.com/juanmerino89/jobs-data-cleaning/refs/heads/main/jobs.csv'
+TABLE1 = 'USA_Job_Postings'
+DATA_SOURCE2 = 'https://www.kaggle.com/datasets/mrayushagrawal/us-crime-dataset'
+TABLE2 = 'USA_Crimes'
+DB = 'data/project_americas.db'
