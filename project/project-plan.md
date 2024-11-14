@@ -7,26 +7,17 @@ Job Market and Salary Analysis for AI and Tech Roles in the U.S.
 ## Main Question
 
 <!-- Think about one main question you want to answer based on the data. -->
-1. What are the key factors influencing job market trends, salary distributions, and skill demand for jobs, tech roles in the U.S.?
-2. How do company characteristics impact these trends?
-3. Is there a relationship between regional crime rates and the types or availability of job postings across different areas in the U.S.?
+1. Is there a relationship between unemployment rates and crime rates across different states in the USA?
+2. Do higher unemployment rates correlate with specific types of crime in certain regions?
 
 ## Description
 
 <!-- Describe your data science project in max. 200 words. Consider writing about why and how you attempt it. -->
-This project aims to provide a deep dive into the U.S. job market in the AI and tech sectors. The goal is to analyze job trends, salary distributions, and skill demands for tech roles and also it aims to investigate the relationship between regional crime rates and the job market dynamics in the United States. Specifically, it will explore whether areas with varying crime rates show differences in the availability, type, or distribution of job postings.
+his project aims to provide insights into how economic conditions, such as unemployment, may impact crime trends.
 
 ## Datasources
 
 <!-- Describe each datasources you plan to use in a section. Use the prefic "DatasourceX" where X is the id of the datasource. -->
-
-### Datasource1: US Data Jobs Salaries Dataset
-* Metadata URL: https://www.kaggle.com/datasets/juanmerinobermejo/data-jobs-dataset
-* Data URL: https://raw.githubusercontent.com/juanmerino89/jobs-data-cleaning/refs/heads/main/jobs.csv
-* Data Type: CSV
-
-Job postings about Data World, including skills, salaries, companies, etc.
-
 
 ### Datasource2: US Crime DataSet
 * Metadata URL: https://www.kaggle.com/datasets/mrayushagrawal/us-crime-dataset
@@ -34,6 +25,13 @@ Job postings about Data World, including skills, salaries, companies, etc.
 * Data Type: CSV
 
 The Dataset contains the record of all the crimes in US form 1980.
+
+### Datasource1: US Data Jobs Salaries Dataset
+* Metadata URL: https://www.kaggle.com/datasets/justin2028/unemployment-in-america-per-us-state
+* Data URL: https://www.kaggle.com/datasets/justin2028/unemployment-in-america-per-us-state?select=Unemployment+in+America+Per+US+State.csv
+* Data Type: CSV
+
+This is a dataset that tracks relevant population statistics and employment rates per US state since 1976.
 
 ## Work Packages
 
