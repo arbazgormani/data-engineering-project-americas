@@ -1,0 +1,108 @@
+
+// Exercise 3
+// Goal
+// Extract the data we are interested in
+// Extract the sheet called “Figure S5.1.2” from the Excel file
+// Ignore the figure itself and only keep the table with actual data (from cell P2 to S45)
+// Rename header columns: “ISO3” to "Country Code", “GDP per capita (US$, thousands)” to "GDP per Capita", “Share of government sustainable bonds" to "Bond Issuance Share"
+// “Economy” does not have to be renamed
+// Validate data, drop all invalid rows
+// "Country Code" must be a valid ISO 3166-1 alpha-3 country code (must not be empty)
+// "GDP per Capita" must be a positive decimal (must not be empty)
+// "Bond Issuance Share" must be a decimal between 0 and 1 (both values included, must not be empty)
+// Assign fitting built-in SQLite types (e.g., BIGINT, TEXT or FLOAT) to all columns
+// Write data into a SQLite database called “country-stats.sqlite”
+// One table “bondIssuance”, containing the data about bond issuance share (columns "Country Code" and "Bond Issuance Share")
+// One table “gdpPerCapita”, containing the data about GDP per capita (columns "Country Code" and "GDP per Capita")
+
+
+
+use { CountryCode } from './country-codes.jv';
+
+valuetype PositiveDecimal oftype decimal {
+    constraints: [ PositiveDecimalConstraint ];
+}
+constraint PositiveDecimalConstraint on decimal:
+    value > 0;
+
+valuetype BondIssuanceShareDecimal oftype decimal {
+    constraints: [ ZeroOneConstraint ];
+}
+constraint ZeroOneConstraint on decimal:
+    value >= 0 and value <= 1;
+
+
+pipeline CountryStatsPipeline {
+  block CountryStatsExtractor oftype HttpExtractor {
+    url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+  }
+
+  block CountryStatsTextXLSXInterpreter oftype XLSXInterpreter { }
+  block CountryStatsSheetpicker oftype SheetPicker {
+    sheetName: 'Figure S5.1.2';
+  }
+
+  block NameHeaderWriter oftype CellWriter {
+    at: range P2:S2;
+    write: [
+      "Country Code",
+      "Economy",
+      "GDP per Capita",
+      "Bond Issuance Share"
+    ];
+  }
+
+  block CountryStatsDataSelector oftype CellRangeSelector {
+   select: range P2:S45;
+  }
+
+  block CountryStatsTableInterpreter oftype TableInterpreter {
+    header: true;
+    columns: [
+      "Country Code" oftype CountryCode,
+      "Economy" oftype text,
+      "GDP per Capita" oftype PositiveDecimal,
+      "Bond Issuance Share" oftype BondIssuanceShareDecimal
+    ];
+  }
+
+  block CountryStatsLoader oftype SQLiteLoader {
+    table: "CountryStats";
+    file: "./CountryStats.sqlite";
+  }
+
+  // // 4.2 Here, we pick another sheet named 'Wavelength thickness trapping' from the Workbook
+  // block SecondCountryStatsSheetpicker oftype SheetPicker {
+  //   sheetName: 'Wavelength thickness trapping';
+  // }
+
+  // block SecondCountryStatsTableInterpreter oftype TableInterpreter {
+  //   header: true;
+  //   columns: [
+  //     "n" oftype decimal,
+  //     "Wavelength (µm)" oftype decimal,
+  //   ];
+  // }
+
+  // block SecondCountryStatsLoader oftype SQLiteLoader {
+
+  //   table: "SecondCountryStats";
+  //   file: "./CountryStats.sqlite";
+  // }
+
+  CountryStatsExtractor
+    -> CountryStatsTextXLSXInterpreter
+    -> CountryStatsSheetpicker
+    -> NameHeaderWriter
+    -> CountryStatsDataSelector
+    -> CountryStatsTableInterpreter
+    -> CountryStatsLoader;
+  
+  // 5. Once the XLSX file is interpreted, we can split the pipeline and 
+  // work separately on the different sheets from our input file
+//   CountryStatsTextXLSXInterpreter
+//     -> SecondCountryStatsSheetpicker
+//     -> SecondCountryStatsTableInterpreter
+//     -> SecondCountryStatsLoader;
+}
+
