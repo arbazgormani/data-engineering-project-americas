@@ -56,53 +56,61 @@ pipeline CountryStatsPipeline {
    select: range P2:S45;
   }
 
-  block CountryStatsTableInterpreter oftype TableInterpreter {
+  // block CountryStatsTableInterpreter oftype TableInterpreter {
+  //   header: true;
+  //   columns: [
+  //     "Country Code" oftype CountryCode,
+  //     "Economy" oftype text,
+  //     "GDP per Capita" oftype PositiveDecimal,
+  //     "Bond Issuance Share" oftype BondIssuanceShareDecimal
+  //   ];
+  // }
+
+  // block CountryStatsLoader oftype SQLiteLoader {
+  //   table: "CountryStats";
+  //   file: "./CountryStats.sqlite";
+  // }
+
+// 1) Table “bondIssuance”, containing the data about bond issuance share (columns "Country Code" and "Bond Issuance Share")
+
+  block BondIssuanceTableInterpreter oftype TableInterpreter {
     header: true;
     columns: [
       "Country Code" oftype CountryCode,
-      "Economy" oftype text,
-      "GDP per Capita" oftype PositiveDecimal,
       "Bond Issuance Share" oftype BondIssuanceShareDecimal
     ];
   }
 
-  block CountryStatsLoader oftype SQLiteLoader {
-    table: "CountryStats";
-    file: "./CountryStats.sqlite";
+  block CountryBondIssuanceLoader oftype SQLiteLoader {
+    table: "bondIssuance";
+    file: "./country-stats.sqlite";
   }
 
-  // // 4.2 Here, we pick another sheet named 'Wavelength thickness trapping' from the Workbook
-  // block SecondCountryStatsSheetpicker oftype SheetPicker {
-  //   sheetName: 'Wavelength thickness trapping';
-  // }
+// 2) Table “gdpPerCapita”, containing the data about GDP per capita (columns "Country Code" and "GDP per Capita")
 
-  // block SecondCountryStatsTableInterpreter oftype TableInterpreter {
-  //   header: true;
-  //   columns: [
-  //     "n" oftype decimal,
-  //     "Wavelength (µm)" oftype decimal,
-  //   ];
-  // }
+  block GdpPerCapitaTableInterpreter oftype TableInterpreter {
+    header: true;
+    columns: [
+      "Country Code" oftype CountryCode,
+      "GDP per Capita" oftype PositiveDecimal
+    ];
+  }
 
-  // block SecondCountryStatsLoader oftype SQLiteLoader {
-
-  //   table: "SecondCountryStats";
-  //   file: "./CountryStats.sqlite";
-  // }
+  block CountryGdpPerCapitaLoader oftype SQLiteLoader {
+    table: "gdpPerCapita";
+    file: "./country-stats.sqlite";
+  }
 
   CountryStatsExtractor
     -> CountryStatsTextXLSXInterpreter
     -> CountryStatsSheetpicker
     -> NameHeaderWriter
     -> CountryStatsDataSelector
-    -> CountryStatsTableInterpreter
-    -> CountryStatsLoader;
+    -> BondIssuanceTableInterpreter
+    -> CountryBondIssuanceLoader;
   
-  // 5. Once the XLSX file is interpreted, we can split the pipeline and 
-  // work separately on the different sheets from our input file
-//   CountryStatsTextXLSXInterpreter
-//     -> SecondCountryStatsSheetpicker
-//     -> SecondCountryStatsTableInterpreter
-//     -> SecondCountryStatsLoader;
+  CountryStatsDataSelector
+    -> GdpPerCapitaTableInterpreter
+    -> CountryGdpPerCapitaLoader;
 }
 
