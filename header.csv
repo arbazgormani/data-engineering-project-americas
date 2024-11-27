@@ -1,0 +1,6 @@
+,state,year,month,incident,victim_count,perpetrator_count,fips_code,total_civilian_non-institutional_population_in_state,total_civilian_labor_force_in_state,percent_of_state's_population,total_employment_in_state,percent_of_labor_force_employed_in_state,total_unemployment_in_state,percent_of_labor_force_unemployed_in_state
+0,Alabama,1980,1,119,14,6,1,2812000,1672687,59.5,1546209,55.0,126478,7.6
+1,Alabama,1980,2,63,2,4,1,2815000,1673059,59.4,1543743,54.8,129316,7.7
+2,Alabama,1980,3,103,6,4,1,2818000,1673967,59.4,1540076,54.7,133891,8.0
+3,Alabama,1980,4,72,6,1,1,2822000,1675653,59.4,1536048,54.4,139605,8.3
+4,Alabama,1980,5,78,0,9,1,2825000,1677891,59.4,1532322,54.2,145569,8.7
