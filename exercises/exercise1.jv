@@ -66,8 +66,8 @@ pipeline AirportsPipeline {
   // The structural information of the table is used
   // to generate the correct table.
   block AirportsLoader oftype SQLiteLoader {
-    table: "Airports";
-    file: "./Airports.sqlite";
+    table: "airports";
+    file: "./airports.sqlite";
   }
 
 }
