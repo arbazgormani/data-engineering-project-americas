@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
+import os
 from pipeline import fetch_csv, clean_data, extract_data, transform_data, load_data_to_db
 from sqlalchemy import create_engine
 
@@ -13,6 +14,9 @@ class TestPipeline(unittest.TestCase):
     """
     Test cases for the pipeline.
     """
+    def __init__(self, methodName = "runTest"):
+        super().__init__(methodName)
+        self.db_path = './data/project_americas.db'
 
     @patch("pipeline.kagglehub.dataset_download")
     @patch("pipeline.os.listdir")
@@ -187,11 +191,17 @@ class TestPipeline(unittest.TestCase):
             'sqlite:///mock_test_db.sqlite')
         mock_engine.connect.assert_called_once()
 
+    def test_db_file(self):
+        """
+        test database file from generated ETL pipeline.
+        """
+        self.assertTrue(os.path.exists(self.db_path), f"Database file '{self.db_path}' does not exist.")
+
     def test_db_content(self):
         """
         test database content from load ETL pipeline.
         """
-        engine = create_engine(f'sqlite:///{'./data/project_americas.db'}')
+        engine = create_engine(f'sqlite:///{self.db_path}')
         connection = engine.connect()
         try:
             df = pd.read_sql(
