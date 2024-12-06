@@ -24,6 +24,7 @@ jobs:
       - name: Install Libraries
         id: install_libraries
         run: |
+          ls
           python3 -m pip install -r requirements.txt
 
       # Run Tests
