@@ -1,4 +1,4 @@
-name: Exercise Feedback
+name: CI/CD Running Tests
 
 on:
   push:
