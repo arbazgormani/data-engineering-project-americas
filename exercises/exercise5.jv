@@ -1,0 +1,83 @@
+pipeline GTFSPipeline {
+
+
+    GTFSExtractor
+    -> GTFSArchiveInterpreter
+    -> GTFSDataFilePicker
+    -> GTFSTextFileInterpreter
+    -> GTFSCSVInterpreter
+    -> GTFSTableInterpreter
+    -> GTFSLoader;
+
+    block GTFSExtractor oftype HttpExtractor {
+
+        url: "https://gtfs.rhoenenergie-bus.de/GTFS.zip";
+    }
+
+    block GTFSArchiveInterpreter oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+
+    block GTFSDataFilePicker oftype FilePicker {
+        path: "./stops.txt";
+    }
+
+    block GTFSTextFileInterpreter oftype TextFileInterpreter { }
+
+    block GTFSCSVInterpreter oftype CSVInterpreter {
+        enclosing: '"';
+    }
+
+    // block GTFSDataHeaderWriter oftype CellWriter {
+    //     at: range A1:E1;
+    //     write: ["id", "producer", "model", "month", "temperature"];
+    // }
+
+    // block GTFSDataHeaderColumnNameWriter oftype CellWriter {
+    //     at: cell J1;
+    //     write: ["battery_temperature"];
+    // }
+
+    constraint Zone1925Constraint on integer:
+        value == 1925;
+
+    valuetype Zone1925 oftype integer {
+        constraints: [Zone1925Constraint];
+    }
+
+    constraint GeographicCoordinatesConstraint oftype RangeConstraint {
+        lowerBound: -90;
+        lowerBoundInclusive: true;
+        upperBound: 90;
+        upperBoundInclusive: true;
+    }
+
+    valuetype GeographicCoordinates oftype decimal {
+        constraints: [GeographicCoordinatesConstraint];
+    }
+
+    constraint PositiveConstraint on integer:
+        value > 0;
+
+    valuetype PositiveInteger oftype integer {
+        constraints: [PositiveConstraint];
+    }
+
+    block GTFSTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+        "stop_id" oftype PositiveInteger,
+        "stop_name" oftype text,
+        "stop_lat" oftype GeographicCoordinates,
+        "stop_lon" oftype GeographicCoordinates,
+        "zone_id" oftype Zone1925,
+        ];
+    }
+
+
+  block GTFSLoader oftype SQLiteLoader {
+    table: "stops";
+    file: "./gtfs.sqlite";
+  }
+
+}
