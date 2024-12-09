@@ -13,19 +13,19 @@ def fetch_csv(url):
     try:
         path = kagglehub.dataset_download(url)
         csv_file_path = path + f'/{os.listdir(path)[0]}'
-        
+
         if not os.path.exists(csv_file_path):
             raise FileNotFoundError(f"CSV file not found at {csv_file_path}")
-        
+
         df = pd.read_csv(csv_file_path)
         print("CSV file successfully loaded.")
         return df
-    
+
     except Exception as e:
         print("Error loading CSV file: %s", str(e))
         raise
 
-        
+
 def clean_data(df):
     """
     Clean data and modify column names properly.
@@ -35,13 +35,14 @@ def clean_data(df):
 
             # Drop missing values for simplicity
             df.dropna(inplace=True)
-        
+
         # Standardize column names
-        df.columns = df.columns.str.lower().str.replace(" (%) ", "_").str.replace("state/area", "state").str.replace(" ", "_")
+        df.columns = df.columns.str.lower().str.replace(
+            " (%) ", "_").str.replace("state/area", "state").str.replace(" ", "_")
         print(df.columns)
-        
+
         return df
-    
+
     except Exception as e:
         print("Error in cleaning the data: %s", str(e))
         raise
@@ -54,7 +55,7 @@ def extract_data(unemployment_data_source, crime_data_source):
     try:
         unemployment_df = fetch_csv(unemployment_data_source)
         crime_df = fetch_csv(crime_data_source)
-        
+
         return {'unemployment_dataset': unemployment_df, 'crime_dataset': crime_df}
     except Exception as e:
         print("Error in data extraction: %s", str(e))
@@ -68,10 +69,10 @@ def transform_data(data_dict):
     try:
         unemployment_df = clean_data(data_dict['unemployment_dataset'])
         crime_df = clean_data(data_dict['crime_dataset'])
-        
+
         month_mapping = {
-        "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
-        "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+            "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+            "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
         }
         crime_df["month"] = crime_df["month"].map(month_mapping)
 
@@ -79,7 +80,7 @@ def transform_data(data_dict):
         crime_summary = crime_df.groupby(["state", "year", "month"]).agg({
             "incident": "sum",         # Total incidents
             "victim_count": "sum",     # Total victims
-            "perpetrator_count": "sum" # Total perpetrators
+            "perpetrator_count": "sum"  # Total perpetrators
         }).reset_index()
 
         # Merge with unemployment data frame
@@ -91,21 +92,19 @@ def transform_data(data_dict):
         )
         for col in merged_df.columns:
             if 'total' in col:
-                merged_df[col] = merged_df[col].str.replace(',', '').astype('int64')
-
+                merged_df[col] = merged_df[col].str.replace(
+                    ',', '').astype('int64')
 
         # merged_df.to_csv("aggregated_crime_unemployment.csv", index=False)
-
 
         # print(unemployment_df.shape, crime_df.shape)
         # data = pd.merge(unemployment_df, crime_df, on='state', how='inner')
         return {'unemployment_dataset': unemployment_df, 'crime_dataset': crime_df, "merged": merged_df}
-    
+
     except Exception as e:
         print("Error in data transformation: %s", str(e))
         raise
 
-        
 
 def load_data_to_db(df, db_name, table_name):
     """
@@ -135,6 +134,6 @@ def main():
 
     load_data_to_db(merged_df, DB, 'US_crime_unemployment')
 
-    
+
 if __name__ == "__main__":
     main()

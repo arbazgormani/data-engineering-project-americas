@@ -1,0 +1,32 @@
+name: CI/CD Running Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install python
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      # Installing Required Libraries
+      - name: Install Libraries
+        id: install_libraries
+        run: |
+          ls
+          python3 -m pip install -r requirements.txt
+
+      # Run Tests
+      - name: Run Tests
+        id: run_tests
+        run: |
+          bash ./project/test.sh
