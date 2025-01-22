@@ -3,11 +3,11 @@
 ## **Methods of Advanced Data Engineering Project**
 
 ### **Description**
-This project investigates the relationship between unemployment rates and crime incidents across U.S. states. By integrating two datasets—one containing crime statistics and the other capturing unemployment rates—this analysis explores correlations between economic instability and criminal activity.
+This project investigates the relationship between unemployment rates and crime incidents across U.S. states. By integrating two datasets, one containing crime statistics and the other capturing unemployment rates. This analysis explores correlations between economic instability and criminal activity.
 
 ## **Features**
 
-- **ETL Pipeline**: Extracts, transforms, and loads raw data from multiple sources.
+- **ETL Pipeline**: Extracts, transforms, and loads data from data sources.
 - **Exploratory Data Analysis (EDA)**:
   - Crime trends across states.
   - Yearly crime and unemployment trends.
