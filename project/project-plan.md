@@ -2,7 +2,7 @@
 
 ## Title
 <!-- Give your project a short title. -->
-The Impact of Unemployment on Crime Across US States.
+Crime and Unemployment Analysis in the United States.
 
 ## Main Question
 
